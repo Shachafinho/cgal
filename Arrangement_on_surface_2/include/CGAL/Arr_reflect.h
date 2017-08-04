@@ -1,4 +1,4 @@
-// Copyright (c) 2005,2006,2007,2008,2009,2010,2011 Tel-Aviv University (Israel).
+// Copyright (c) 2017 Tel-Aviv University (Israel).
 // All rights reserved.
 //
 // This file is part of CGAL (www.cgal.org).
@@ -55,12 +55,12 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res,
              const typename GeomeTraits::Point_2& p)
 {
-  /* Copy the initial arrangement and reflect it in-place */
+  // Copy the initial arrangement and reflect it in-place
 
-  typedef Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>  ArrRes;
-  typedef GeomeTraitsRes::Point_2                                   Point;
-  typedef GeomeTraitsRes::X_monotone_curve_2                        Curve;
-  typedef CGAL::Arr_accessor<ArrRes>                                Accessor;
+  typedef Arrangement_on_surface_2<typename GeomeTraitsRes, typename TopolTraitsRes> Arr_res;
+  typedef typename GeomeTraitsRes::Point_2                                           Point;
+  typedef typename GeomeTraitsRes::X_monotone_curve_2                                Curve;
+  typedef CGAL::Arr_accessor<Arr_res>                                                Accessor;
 
   // Some type assertions (not all, but better then nothing).
   CGAL_static_assertion
@@ -78,21 +78,21 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
   arr_res.assign(arr);
 
   // Obtain an accessor to modify the geometric traits
-  typename Accessor accessor(arr_res);
+  Accessor accessor(arr_res);
 
   // Reflect the point of each vertex through p
   for (auto vit = arr_res.vertices_begin(); vit != arr_res.vertices_end(); ++vit) {
-	  const typename Point& vp = vit->point();
-	  // TODO: Reflect the point using traits class
-	  typename Point reflected_point(p.x() - vp.x(), p.y() - vp.y());
+	const Point& vp = vit->point();
+	// TODO: Reflect the point using traits class
+	Point reflected_point(p.x() - vp.x(), p.y() - vp.y());
 
-	  accessor.modify_vertex_ex(vit, reflected_point);
+	accessor.modify_vertex_ex(vit, reflected_point);
   }
 
   // Reflect the curves as well
   for (auto eit = arr_res.edges_begin(); eit != arr_res.edges_end(); ++eit) {
-	  typename Curve reflected_curve(eit->source()->point(), eit->target()->point());
-	  accessor.modify_edge_ex(eit, reflected_curve);
+	Curve reflected_curve(eit->source()->point(), eit->target()->point());
+	accessor.modify_edge_ex(eit, reflected_curve);
   }
 }
 
@@ -106,7 +106,8 @@ template <typename GeomeTraits, typename GeomeTraitsRes,
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
 {
-  reflect(arr, arr_res, GeomeTraits::Point_2(CGAL::ORIGIN));
+  typedef typename GeomeTraits::Point_2	 Point;
+  reflect(arr, arr_res, Point(CGAL::ORIGIN));
 }
 
 } //namespace CGAL
