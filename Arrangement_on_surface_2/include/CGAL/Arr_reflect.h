@@ -32,7 +32,7 @@
 #include <boost/optional/optional.hpp>
 
 #include <CGAL/Arrangement_on_surface_2.h>
-#include <CGAL/Arr_vertex_index_map.h>
+#include <CGAL/Arr_accessor.h>
 
 #include <vector>
 #include <boost/mpl/if.hpp>
@@ -55,16 +55,12 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res,
              const typename GeomeTraits::Point_2& p)
 {
-  /* Construct the reflected arrangement from scratch */
+  /* Copy the initial arrangement and reflect it in-place */
 
-  typedef Arrangement_on_surface_2<GeomeTraits, TopolTraits>        Arr;
   typedef Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>  ArrRes;
-  typedef GeomeTraits::Point_2                                      ArrPoint;
-  typedef GeomeTraitsRes::Point_2                                   ArrResPoint;
-  typedef GeomeTraits::X_monotone_curve_2                           ArrCurve;
-  typedef GeomeTraitsRes::X_monotone_curve_2                        ArrResCurve;
-  typedef CGAL::Arr_vertex_index_map<Arr>                           Arr_vertex_index_map;
-  typedef CGAL::Arr_vertex_index_map<ArrRes>                        ArrRes_vertex_index_map;
+  typedef GeomeTraitsRes::Point_2                                   Point;
+  typedef GeomeTraitsRes::X_monotone_curve_2                        Curve;
+  typedef CGAL::Arr_accessor<ArrRes>                                Accessor;
 
   // Some type assertions (not all, but better then nothing).
   CGAL_static_assertion
@@ -78,30 +74,25 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
   CGAL_precondition((void *)(&arr_res) != (void *)(&arr));
   
 
-  // First, insert the reflected points as isolated vertices.
-  for (auto vit = arr.vertices_begin(); vit != arr.vertices_end(); ++vit) {
-    const typename ArrPoint& vp = vit->point();
-    // TODO: Reflect the point using traits class
-    typename ArrResPoint new_point(p.x() - vp.x(), p.y() - vp.y());
+  // Copy the initial arrangement
+  arr_res.assign(arr);
 
-    arr_res.insert_in_face_interior(new_point, arr_res.unbounded_faces_begin());
+  // Obtain an accessor to modify the geometric traits
+  typename Accessor accessor(arr_res);
+
+  // Reflect the point of each vertex through p
+  for (auto vit = arr_res.vertices_begin(); vit != arr_res.vertices_end(); ++vit) {
+	  const typename Point& vp = vit->point();
+	  // TODO: Reflect the point using traits class
+	  typename Point reflected_point(p.x() - vp.x(), p.y() - vp.y());
+
+	  accessor.modify_vertex_ex(vit, reflected_point);
   }
 
-  // Create vertex to index mappings for both arrangements.
-  typename Arr_vertex_index_map arr_vi_map(arr);
-  typename ArrRes_vertex_index_map arr_res_vi_map(arr_res);
-
-  // Insert the reflected curves, corresponding to arr's edges.
-  for (auto eit = arr.edges_begin(); eit != arr.edges_end(); ++eit) {
-    int source_vertex_index = arr_vi_map[eit->source().current_iterator().remove_const()];
-    int target_vertex_index = arr_vi_map[eit->target().current_iterator().remove_const()];
-    auto res_source_vh = arr_res_vi_map.vertex(source_vertex_index);
-    auto res_target_vh = arr_res_vi_map.vertex(target_vertex_index);
-    
-    // TODO: Reflect the curve using traits class
-    auto reflected_curve = ArrResCurve(res_source_vh->point(), res_target_vh->point());
-    
-    arr_res.insert_at_vertices(reflected_curve, res_source_vh, res_target_vh);
+  // Reflect the curves as well
+  for (auto eit = arr_res.edges_begin(); eit != arr_res.edges_end(); ++eit) {
+	  typename Curve reflected_curve(eit->source()->point(), eit->target()->point());
+	  accessor.modify_edge_ex(eit, reflected_curve);
   }
 }
 
