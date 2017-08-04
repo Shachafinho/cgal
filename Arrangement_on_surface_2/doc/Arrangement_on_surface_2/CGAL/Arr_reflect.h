@@ -8,7 +8,7 @@ namespace CGAL {
 template <typename GeomeTraits, typename GeomeTraitsRes
           typename TopolTraits, typename TopolTraitsRes>
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-             Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr_res,
+             Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res,
              const typename GeomeTraits::Point_2& p);
 
 /*! \ingroup PkgArrangement2Funcs
@@ -19,6 +19,6 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
 template <typename GeomeTraits, typename GeomeTraitsRes
           typename TopolTraits, typename TopolTraitsRes>
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-             Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr_res);
+             Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res);
 
 } // namesapce CGAL
