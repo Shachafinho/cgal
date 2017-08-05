@@ -118,6 +118,7 @@ implemented as peripheral classes or as free (global) functions.
 - `ArrangementWithHistoryOutputFormatter`
 - `ArrangementPointLocation_2`
 - `ArrangementVerticalRayShoot_2`
+- `ArrangementReflectionTraits_2`
 
 ## Geometric Object Concepts ##
 
@@ -148,6 +149,7 @@ implemented as peripheral classes or as free (global) functions.
 - `ArrTraits::MakeXMonotone_2`
 - `ArrTraits::Approximate_2`
 - `ArrTraits::ConstructXMonotoneCurve_2`
+- `ArrTraits::Reflect_2`
 
 ## Classes ##
 
@@ -206,6 +208,7 @@ implemented as peripheral classes or as free (global) functions.
 - `CGAL::read()`
 - `CGAL::write()`
 - `CGAL::remove_curve()`
+- `CGAL::reflect()`
 - \link PkgArrangement2op_left_shift `CGAL::operator<<` \endlink
 - \link PkgArrangement2op_right_shift `CGAL::operator<<` \endlink
 

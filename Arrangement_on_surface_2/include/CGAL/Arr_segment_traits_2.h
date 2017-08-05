@@ -1060,6 +1060,39 @@ public:
   Construct_opposite_2 construct_opposite_2_object() const
   { return Construct_opposite_2(); }
   //@}
+
+  /// \name Functor definitions for the reflection traits.
+  // @{
+
+  class Reflect_2
+  {
+  public:
+    /*!
+     * Return the given point, reflected thorugh the origin.
+     * \param p The point.
+     * \return The refected point.
+     */
+    Point_2 operator()(const Point_2& p) const
+    { return (Point_2(-(p.x()), -(p.y()))); }
+
+    /*!
+     * Return the given x-monotone curve, reflected thorugh the origin.
+     * \param cv The x-monotone curve.
+     * \return The refected curve.
+     */
+    X_monotone_curve_2 operator()(const X_monotone_curve_2& cv) const
+    {
+      Point_2 reflected_source = (*this)(cv.source());
+      Point_2 reflected_target = (*this)(cv.target());
+
+      return X_monotone_curve_2(reflected_source, reflected_target);
+    }
+  };
+
+  /*! Get a Reflect_2 functor object. */
+  Reflect_2 reflect_2_object() const
+  { return Reflect_2(); }
+  // @}
 };
 
 /*!

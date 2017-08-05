@@ -58,16 +58,16 @@ supports the merging of curves of opposite directions.
 \cgalModels `ArrangementTraits_2`
 \cgalModels `ArrangementLandmarkTraits_2`
 \cgalModels `ArrangementDirectionalXMonotoneTraits_2`
+\cgalModels `ArrangementReflectionTraits_2`
 
 */
 template< typename Kernel >
 class Arr_segment_traits_2 {
 public:
 
-/// @}
-
-Class Trim_2{
+class Trim_2 {
 public:
+
 /// \name Creation 
 /// @{
 
@@ -76,10 +76,37 @@ Trims the given x-monotone curve to an from src to tgt.
 \ pre `src` and `tgt` lies on the curve 
 */ 
 
-X_monotone_curve_2(const X_monotone_curve_2& xcv, 
+X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv, 
                                 const Point_2& src,
                                 const Point_2& tgt)const
-}/* end Arr_segment_traits_2::Trim_2 */
+
+/// @}
+
+} /* end Arr_segment_traits_2::Trim_2 */
+
+/*!
+Models the `ArrangementReflectionTraits_2::Reflect_2` concept.
+Reflects the arrangement's geometric objects through the origin.
+*/
+class Reflect_2 {
+public:
+
+/// \name Operations 
+/// @{
+
+/*!
+Return the given point, reflected thorugh the origin.
+*/ 
+Point_2 operator()(const Point_2& p) const
+
+/*!
+Return the given x-monotone curve, reflected thorugh the origin.
+*/
+X_monotone_curve_2 operator()(const X_monotone_curve_2& cv) const
+
+/// @}
+
+} /* end Arr_segment_traits_2::Reflect_2 */
 
 }; /* end Arr_segment_traits_2 */
 } /* end namespace CGAL */
