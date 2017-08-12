@@ -26,6 +26,7 @@ namespace CGAL {
   \cgalModels `ArrangementTraits_2`
   \cgalModels `ArrangementLandmarkTraits_2`
   \cgalModels `ArrangementOpenBoundaryTraits_2`
+  \cgalModels `ArrangementReflectionTraits_2`
 */
 template< typename Kernel >
 class Arr_linear_traits_2 {
@@ -159,6 +160,30 @@ X_monotone_curve_2(const X_monotone_curve_2& xcv,
                                 const Point_2& src,
                                 const Point_2& tgt)const
 }/* end Arr_linear_traits_2::Trim_2 */
+
+  /*!
+    Models the `ArrangementReflectionTraits_2::Reflect_2` concept.
+    Reflects the arrangement's geometric objects through the origin.
+  */
+  class Reflect_2 {
+  public:
+  
+  /// \name Operations 
+  /// @{
+  
+  /*!
+    Return the given point, reflected thorugh the origin.
+  */ 
+  Point_2 operator()(const Point_2& p) const
+  
+  /*!
+    Return the given x-monotone curve, reflected thorugh the origin.
+  */
+  X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+  
+  /// @}
+  
+  } /* end Arr_linear_traits_2::Reflect_2 */
 
 }; /* end Arr_linear_traits_2 */
 } /* end namespace CGAL */

@@ -1077,13 +1077,13 @@ public:
 
     /*!
      * Return the given x-monotone curve, reflected thorugh the origin.
-     * \param cv The x-monotone curve.
+     * \param xcv The x-monotone curve.
      * \return The refected curve.
      */
-    X_monotone_curve_2 operator()(const X_monotone_curve_2& cv) const
+    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
     {
-      Point_2 reflected_source = (*this)(cv.source());
-      Point_2 reflected_target = (*this)(cv.target());
+      Point_2 reflected_source = (*this)(xcv.source());
+      Point_2 reflected_target = (*this)(xcv.target());
 
       return X_monotone_curve_2(reflected_source, reflected_target);
     }

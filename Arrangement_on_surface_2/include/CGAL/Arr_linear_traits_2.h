@@ -1778,6 +1778,87 @@ public:
   }
   //@}
 
+  /// \name Functor definitions for the reflection traits.
+  // @{
+
+  class Reflect_2 
+  {
+  protected:
+    typedef Arr_linear_traits_2<Kernel> Traits;
+
+    /*! The traits (in case it has state) */
+    const Traits* m_traits;
+
+    /*! Constructor
+     * \param traits the traits (in case it has state)
+     * The constructor is declared private to allow only the functor
+     * obtaining function, which is a member of the nesting class,
+     * constructing it.
+     */
+    Reflect_2(const Traits* traits) : m_traits(traits) {}
+
+    //! Allow its functor obtaining function calling the private constructor.
+    friend class Arr_linear_traits_2<Kernel>;
+
+  public:
+    /*!
+     * Return the given point, reflected thorugh the origin.
+     * \param p The point.
+     * \return The refected point.
+     */
+    Point_2 operator()(const Point_2& p) const
+    { return (Point_2(-(p.x()), -(p.y()))); }
+
+    /*!
+     * Return the given x-monotone curve, reflected thorugh the origin.
+     * \param xcv The x-monotone curve.
+     * \return The refected curve.
+     */
+    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+    {
+      typedef typename Kernel_::Construct_point_on_2 Construct_point_on_2;
+
+      CGAL_precondition (!xcv.is_degenerate());
+
+      X_monotone_curve_2 reflected_xcv;
+      const Kernel* kernel = m_traits;
+
+      if (xcv.is_segment())
+      {
+        Point_2 reflected_source = (*this)(xcv.source());
+        Point_2 reflected_target = (*this)(xcv.target());
+
+        reflected_xcv = kernel->construct_segment_2_object()(reflected_source, reflected_target);
+      }
+      else if (xcv.is_line())
+      {
+        Construct_point_on_2 construct_vertex = kernel->construct_point_on_2_object();
+
+        Line_2 line = xcv.line();
+        Point_2 reflected_source = (*this)(construct_vertex(line, 0));   // Some point on the line.
+        Point_2 reflected_target = (*this)(construct_vertex(line, 1));   // Some point further on the line.
+
+        reflected_xcv = kernel->construct_line_2_object()(reflected_source, reflected_target);
+      }
+      else if (xcv.is_ray())
+      {
+        Construct_point_on_2 construct_vertex = kernel->construct_point_on_2_object();
+
+        Ray_2 ray = xcv.ray();
+        Point_2 reflected_source = (*this)(construct_vertex(ray, 0));   // The source point.
+        Point_2 reflected_target = (*this)(construct_vertex(ray, 1));   // Some point on the ray.
+
+        reflected_xcv = kernel->construct_ray_2_object()(reflected_source, reflected_target);
+      }
+
+      return reflected_xcv;
+    }
+  };
+
+  /*! Get a Reflect_2 functor object. */
+  Reflect_2 reflect_2_object() const { return Reflect_2(this); }
+  // @}
+
 };
 
 /*!

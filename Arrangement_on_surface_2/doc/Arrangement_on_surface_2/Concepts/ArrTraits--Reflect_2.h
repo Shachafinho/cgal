@@ -22,9 +22,9 @@ returns	the point `p` reflected through the origin.
 ArrTraits::Point_2 operator()(const ArrTraits::Point_2& p);
 
 /*!
-returns	the x-monotone curve `xc` reflected through the origin.
+returns	the x-monotone curve `xcv` reflected through the origin.
 */
-ArrTraits::X_monotone_curve_2 operator()(const ArrTraits::X_monotone_curve_2& xc);
+ArrTraits::X_monotone_curve_2 operator()(const ArrTraits::X_monotone_curve_2& xcv);
 
 /// @}
 

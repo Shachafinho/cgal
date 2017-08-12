@@ -5,7 +5,7 @@ namespace CGAL {
  * \brief Computes the reflection of an arrangement through a point.
  * \details Computes the reflection of an arrangement through a point.
  */
-template <typename GeomeTraits, typename GeomeTraitsRes
+template <typename GeomeTraits, typename GeomeTraitsRes,
           typename TopolTraits, typename TopolTraitsRes>
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res,
@@ -16,7 +16,7 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
  * \brief Computes the reflection of an arrangement through the origin.
  * \details Computes the reflection of an arrangement through the origin.
  */
-template <typename GeomeTraits, typename GeomeTraitsRes
+template <typename GeomeTraits, typename GeomeTraitsRes,
           typename TopolTraits, typename TopolTraitsRes>
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res);

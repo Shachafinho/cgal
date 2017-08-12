@@ -9,6 +9,7 @@ A model of this concept is able to perform a reflection of the arrangement's geo
 \cgalRefines `ArrangementBasicTraits_2`
 
 \cgalHasModel `CGAL::Arr_segment_traits_2<Kernel>`
+\cgalHasModel `CGAL::Arr_linear_traits_2<Kernel>`
 
 \sa `reflect` 
 

@@ -102,7 +102,7 @@ Point_2 operator()(const Point_2& p) const
 /*!
 Return the given x-monotone curve, reflected thorugh the origin.
 */
-X_monotone_curve_2 operator()(const X_monotone_curve_2& cv) const
+X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
 
 /// @}
 
