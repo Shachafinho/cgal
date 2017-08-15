@@ -44,16 +44,14 @@
 namespace CGAL {
 
 /*!
- * Computes the reflection of an arrangement through a point.
+ * Computes the reflection of an arrangement through the origin.
  * \param arr The arrangement to reflect.
  * \param arr_res Output: The resulting arrangement.
- * \param p The point through which the reflection is done.
  */
 template <typename GeomeTraits, typename GeomeTraitsRes,
           typename TopolTraits, typename TopolTraitsRes>
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-             Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res,
-             const typename GeomeTraits::Point_2& p)
+             Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
 {
   // Copy the initial arrangement and reflect it in-place
 
@@ -95,21 +93,6 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
     accessor.modify_edge_ex(eit, reflect_object(eit->curve()));
   }
 }
-
-/*!
- * Computes the reflection of an arrangement through the origin.
- * \param arr The arrangement to reflect.
- * \param arr_res Output: The resulting arrangement.
- */
-template <typename GeomeTraits, typename GeomeTraitsRes,
-          typename TopolTraits, typename TopolTraitsRes>
-void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-             Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
-{
-  typedef typename GeomeTraits::Point_2  Point_2;
-  reflect(arr, arr_res, Point_2(CGAL::ORIGIN));
-}
-
 } //namespace CGAL
 
 #endif

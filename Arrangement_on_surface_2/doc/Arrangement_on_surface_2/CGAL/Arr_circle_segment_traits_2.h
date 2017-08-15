@@ -37,6 +37,7 @@ supports the merging of curves of opposite directions.
 
 \cgalModels `ArrangementTraits_2`
 \cgalModels `ArrangementDirectionalXMonotoneTraits_2`
+\cgalModels `ArrangementReflectionTraits_2`
 
 
 */

@@ -741,6 +741,85 @@ public:
 
   /*! Obtain a Trim_2 functor object. */
   Trim_2 trim_2_object() const { return Trim_2(*this); }
+  //@}
+
+  /// \name Functor definitions for the reflection traits.
+  // @{
+
+  class Reflect_2 
+  {
+  protected:
+    typedef Arr_circle_segment_traits_2<Kernel_, Filter> Traits;
+
+    /*! The traits (in case it has state) */
+    const Traits* m_traits;
+
+    /*! Constructor
+     * \param traits the traits (in case it has state)
+     * The constructor is declared private to allow only the functor
+     * obtaining function, which is a member of the nesting class,
+     * constructing it.
+     */
+    Reflect_2(const Traits* traits) : m_traits(traits) {}
+
+    //! Allow its functor obtaining function calling the private constructor.
+    friend class Arr_circle_segment_traits_2<Kernel_, Filter>;
+
+  public:
+    /*!
+     * Return the given point, reflected thorugh the origin.
+     * \param p The point.
+     * \return The refected point.
+     */
+    Point_2 operator()(const Point_2& p) const
+    { return (Point_2(-(p.x()), -(p.y()))); }
+
+    /*!
+     * Return the given x-monotone curve, reflected thorugh the origin.
+     * \param xcv The x-monotone curve.
+     * \return The refected curve.
+     */
+    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+    {
+      typedef typename Kernel::Line_2   Line_2;
+      typedef typename Kernel::Circle_2 Circle_2;
+
+      CGAL_precondition (!m_traits->equal_2_object()(xcv.source(), xcv.target()));
+
+      X_monotone_curve_2 reflected_xcv;
+
+      Point_2 reflected_source = (*this)(xcv.source());
+      Point_2 reflected_target = (*this)(xcv.target());
+
+      if (xcv.is_linear())
+      {
+        // reflect the supporting line
+        const Line_2& line = xcv.supporting_line();
+        Line_2 reflected_line(-line.a(), -line.b(), line.c());
+
+        reflected_xcv = X_monotone_curve_2(reflected_line, reflected_source, reflected_target);
+      }
+      else if (xcv.is_circular())
+      {
+        const Circle_2& circle = xcv.supporting_circle();
+        const Rational_point_2& circle_center = circle.center();
+
+        // reflect the supporting circle
+        Rational_point_2 reflected_center(-circle_center.x(), -circle_center.y());
+        Circle_2 reflected_circle(
+          reflected_center, circle.squared_radius(), circle.orientation());
+
+        reflected_xcv = X_monotone_curve_2(
+          reflected_circle, reflected_source, reflected_target, xcv.orientation());
+      }
+
+      return reflected_xcv;
+    }
+  };
+
+  /*! Get a Reflect_2 functor object. */
+  Reflect_2 reflect_2_object() const { return Reflect_2(this); }
+  // @}
 };
 
 } //namespace CGAL
