@@ -58,6 +58,8 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
   typedef Arrangement_on_surface_2<typename GeomeTraitsRes, typename TopolTraitsRes> Arr_res;
   typedef typename GeomeTraitsRes::Reflect_2                                         Reflect_2;
   typedef CGAL::Arr_accessor<Arr_res>                                                Arr_accessor;
+  typedef typename Arr_res::Vertex_iterator                                          Vertex_iterator;
+  typedef typename Arr_res::Edge_iterator                                            Edge_iterator;
 
   // Some type assertions (not all, but better then nothing).
   CGAL_static_assertion
@@ -83,13 +85,12 @@ void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
   Reflect_2 reflect_object = arr_res.geometry_traits()->reflect_2_object();
 
   // Reflect the point of each vertex through p
-  for (auto vit = arr_res.vertices_begin(); vit != arr_res.vertices_end(); ++vit) {
-
+  for (Vertex_iterator vit = arr_res.vertices_begin(); vit != arr_res.vertices_end(); ++vit) {
     accessor.modify_vertex_ex(vit, reflect_object(vit->point()));
   }
 
   // Reflect the curves as well
-  for (auto eit = arr_res.edges_begin(); eit != arr_res.edges_end(); ++eit) {
+  for (Edge_iterator eit = arr_res.edges_begin(); eit != arr_res.edges_end(); ++eit) {
     accessor.modify_edge_ex(eit, reflect_object(eit->curve()));
   }
 }
