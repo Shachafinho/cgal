@@ -2130,6 +2130,95 @@ public:
   { return Construct_opposite_2(); }
   //@}
 
+  /// \name Functor definitions for the reflection traits. 
+  // @{ 
+ 
+  class Reflect_2  
+  { 
+  protected: 
+    typedef Arr_geodesic_arc_on_sphere_traits_2<Kernel> Traits; 
+   
+    /*! The traits (in case it has state). */ 
+    const Traits* m_traits; 
+   
+    /*! Constructor 
+     * \param traits the traits (in case it has state) 
+     */ 
+  Reflect_2(const Traits* traits) : m_traits(traits) {} 
+   
+    friend class Arr_geodesic_arc_on_sphere_traits_2<Kernel>; 
+ 
+  public: 
+    /*! 
+     * Return the given point, reflected thorugh the origin. 
+     * \param p The point. 
+     * \return The refected point. 
+     */ 
+    Point_2 operator()(const Point_2& p) const 
+    { 
+      typedef typename Kernel::Construct_opposite_direction_3  Construct_opposite_direction_3;
+      typedef typename Kernel::Equal_2                         Equal_2;
+      typedef typename Point_2::Location_type                  Location_type;
+
+      const Kernel* kernel = m_traits;
+      
+      // Reflect the direction component.
+      Construct_opposite_direction_3 opposite_3 =
+        kernel->construct_opposite_direction_3_object();
+      const Direction_3& original_direction(p);
+      Direction_3 reflected_direction = opposite_3(original_direction);
+
+      // Find the reflected direction location - the boundary on which it lies (if at all).
+      Location_type reflected_location;
+      if (p.is_max_boundary()) {
+        reflected_location = Location_type::MIN_BOUNDARY_LOC;
+      } else if (p.is_min_boundary()) {
+        reflected_location = Location_type::MAX_BOUNDARY_LOC;
+      } else if (p.is_mid_boundary()) {
+        reflected_location = Location_type::NO_BOUNDARY_LOC;
+      } else {
+        // Assume the reflected direction does not lie on any boundary.
+        reflected_location = Location_type::NO_BOUNDARY_LOC;
+
+        // Check whether the reflected direction lies on the mid boundary.
+#if (CGAL_IDENTIFICATION_XY == CGAL_X_MINUS_1_Y_0)
+        if (y_sign(reflected_direction) == ZERO) {
+          reflected_location = Location_type::MID_BOUNDARY_LOC;
+        }
+#else
+        // Project the directions onto the xy plane.
+        Direction_2 ref_dir_xy = Traits::project_xy(reflected_direction);
+        const Direction_2& ident_xy = Traits::identification_xy();
+
+        Equal_2 equal_2 = kernel->equal_2_object();
+        if (equal_2(ref_dir_xy, ident_xy)) {
+          reflected_location = Location_type::MID_BOUNDARY_LOC;
+        }
+#endif
+      }
+
+      return Point_2(reflected_direction, reflected_location);
+    } 
+ 
+    /*! 
+     * Return the given x-monotone curve, reflected thorugh the origin. 
+     * \param xcv The x-monotone curve. 
+     * \return The refected curve. 
+     */ 
+    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const 
+    { 
+      Point_2 reflected_source = (*this)(xcv.source());
+      Point_2 reflected_target = (*this)(xcv.target());
+             
+      return X_monotone_curve_2(reflected_source, reflected_target, xcv.normal(),
+        xcv.is_vertical(), !xcv.is_directed_right(), xcv.is_full(), xcv.is_degenerate(), xcv.is_empty());
+    } 
+  }; 
+ 
+  /*! Get a Reflect_2 functor object. */ 
+  Reflect_2 reflect_2_object() const { return Reflect_2(this); } 
+  // @} 
+
 #if 0
   /*! Inserter for the spherical_arc class used by the traits-class */
   template <typename OutputStream>
