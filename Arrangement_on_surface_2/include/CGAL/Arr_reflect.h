@@ -44,12 +44,13 @@
 namespace CGAL {
 
 /*!
- * Determines at compile-time whether T has a nested type named Reflect_2.
+ * Determines at compile-time whether T has a nested type named "Reflect_2".
  * If so, 'value' holds true, and false otherwise.
  */
 template <typename T>
 struct has_Reflect_2
 {
+private:
   // The following types must differ in size.
   typedef char yes[1];
   typedef char no[2];
@@ -58,10 +59,57 @@ struct has_Reflect_2
   template <typename U> static yes& check(typename U::Reflect_2 *);
   template <typename U> static no& check(...);
 
-  // True iff the first overload worked and T has a nested type named Reflect_2.
+public:
+  // True iff the first overload worked and T has a nested type named "Reflect_2".
   static const bool value = sizeof(check<T>(nullptr)) == sizeof(yes);
 };
 
+/*!
+ * Determines at compile-time whether T has the member function "reflect_topology".
+ * If so, 'value' holds true, and false otherwise.
+ */
+template <typename T>
+struct has_reflect_topology
+{
+private:
+  // The following types must differ in size.
+  typedef char yes[1];
+  typedef char no[2];
+
+  // Used to enforce matching types.
+  template <typename U, U> struct type_check;
+
+  // Enforces signature: void reflect_topology();
+  template <typename U> struct ref_top_signature {
+    typedef void (U::*fptr)();
+  };
+  
+  // Overloads for when U does or doesn't have the reflect_topology member function, respectively.
+  template <typename U> static yes& check(type_check<typename ref_top_signature<U>::fptr, &U::reflect_topology> *);
+  template <typename U> static no& check(...);
+
+public:
+  // True iff the first overload worked and T has the member function "reflect_topology".
+  static const bool value = sizeof(check<T>(nullptr)) == sizeof(yes);
+};
+
+
+/*!
+ * The following overload takes place if TopolTraits support reflection.
+ * It reflects the topology using the traits' Reflect_2 functor.
+ */
+template <typename TopolTraits>
+typename boost::enable_if_c<has_reflect_topology<TopolTraits>::value, void>::type
+reflect_topology(TopolTraits& topol_traits)
+{ topol_traits.reflect_topology(); }
+
+/*!
+ * The following overload takes place if TopolTraits do not support reflection.
+ */
+template <typename TopolTraits>
+typename boost::enable_if_c<!has_reflect_topology<TopolTraits>::value, void>::type
+reflect_topology(TopolTraits& topol_traits)
+{}
 
 /*!
  * The following overload takes place if GeomeTraitsRes support reflection.
@@ -70,8 +118,8 @@ struct has_Reflect_2
 template <typename GeomeTraits, typename GeomeTraitsRes,
           typename TopolTraits, typename TopolTraitsRes>
 typename boost::enable_if_c<has_Reflect_2<GeomeTraitsRes>::value, void>::type
-do_reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-                Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
+reflect_arrangement(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
+                    Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
 {
   // Copy the initial arrangement and reflect it in-place
 
@@ -91,27 +139,29 @@ do_reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
 
   // The result arrangement cannot be the input arrangement.
   CGAL_precondition((void *)(&arr_res) != (void *)(&arr));
-  
 
-  // Copy the initial arrangement
+  // Copy the initial arrangement.
   arr_res.assign(arr);
 
-  // Obtain an accessor to modify the geometric traits
+  // Obtain an accessor to modify the geometric traits.
   Arr_accessor accessor(arr_res);
 
-  // Obtain a reflect object to reflect the geometric objects
+  // Obtain a reflect object to reflect the geometric objects.
   Reflect_2 reflect_object = arr_res.geometry_traits()->reflect_2_object();
 
 
-  // Reflect the point of each vertex through p
+  // Reflect the point of each vertex.
   for (Vertex_iterator vit = arr_res.vertices_begin(); vit != arr_res.vertices_end(); ++vit) {
     accessor.modify_vertex_ex(vit, reflect_object(vit->point()));
   }
 
-  // Reflect the curves as well
+  // Reflect the curves as well.
   for (Edge_iterator eit = arr_res.edges_begin(); eit != arr_res.edges_end(); ++eit) {
     accessor.modify_edge_ex(eit, reflect_object(eit->curve()));
   }
+
+  // Reflect the topology.
+  reflect_topology(*arr_res.topology_traits());
 }
 
 /*!
@@ -121,8 +171,8 @@ do_reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
 template <typename GeomeTraits, typename GeomeTraitsRes,
           typename TopolTraits, typename TopolTraitsRes>
 typename boost::enable_if_c<!has_Reflect_2<GeomeTraitsRes>::value, void>::type
-  do_reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
-                Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
+reflect_arrangement(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
+                    Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
 {
   CGAL_error_msg("The result arrangement traits do not support reflection!");
 }
@@ -137,7 +187,7 @@ template <typename GeomeTraits, typename GeomeTraitsRes,
 void reflect(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr,
              Arrangement_on_surface_2<GeomeTraitsRes, TopolTraitsRes>& arr_res)
 {
-  do_reflect(arr, arr_res);
+  reflect_arrangement(arr, arr_res);
 }
 } //namespace CGAL
 

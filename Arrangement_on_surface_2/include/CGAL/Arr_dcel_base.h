@@ -1437,6 +1437,46 @@ public:
     }
   }
 
+  /*! Reflect the DCEL through the origin. */
+  void reflect()
+  {
+    typedef typename Face::Outer_ccb_iterator Outer_ccb_iterator;
+    typedef typename Face::Inner_ccb_iterator Inner_ccb_iterator;
+
+    // Flip h and its opposite, and update the incidence records.
+    for (Edge_iterator eit = halfedges_begin(); eit != halfedges_end(); ++eit) {
+      Halfedge* h = &(*eit);
+      Halfedge* opp_h = h->opposite();
+
+      Vertex* v = h->vertex();
+      Vertex* opp_v = opp_h->vertex();
+
+      // Flip source and target for h and its opposite.
+      h->set_vertex(opp_v);
+      opp_h->set_vertex(v);
+      h->set_direction(opp_h->direction());
+
+      // Update the vertices accordingly.
+      v->set_halfedge(opp_h);
+      opp_v->set_halfedge(h);
+    }
+
+    // Update the ccb chains (inner and outer) of each face.
+    for (Face_iterator fit = faces_begin(); fit != faces_end(); ++fit) {
+      Face* f = &(*fit);
+
+      Outer_ccb_iterator out_ccb_it;
+      for (out_ccb_it = f->outer_ccbs_begin(); out_ccb_it != f->outer_ccbs_end(); ++out_ccb_it) {
+        reverse_ccb_chain(*out_ccb_it);
+      }
+
+      Inner_ccb_iterator in_ccb_it;
+      for (in_ccb_it = f->inner_ccbs_begin(); in_ccb_it != f->inner_ccbs_end(); ++in_ccb_it) {
+        reverse_ccb_chain(*in_ccb_it);
+      }
+    }
+  }
+
 protected:
   /*! Create a new halfedge. */
   Halfedge* _new_halfedge()
@@ -1453,6 +1493,29 @@ protected:
     halfedges.erase(h);
     halfedge_alloc.destroy(h);
     halfedge_alloc.deallocate(h, 1);
+  }
+
+private:
+  /*! Reverse a ccb chain, represented by ccb_halfedge. */
+  void reverse_ccb_chain(Halfedge* ccb_halfedge)
+  {
+    Halfedge* ccb_curr_halfedge = ccb_halfedge;
+
+    // This is the first prev link to be overwritten.
+    Halfedge* ccb_last_halfedge_prev = ccb_halfedge->prev()->prev();
+    
+    Halfedge* ccb_next_halfedge = ccb_curr_halfedge->next();
+    while (ccb_next_halfedge != ccb_halfedge) {
+      // Fix the links of the current halfedge.
+      ccb_curr_halfedge->set_next(ccb_curr_halfedge->prev());
+
+      // Advance to the next halfedge.
+      ccb_curr_halfedge = ccb_next_halfedge;
+      ccb_next_halfedge = ccb_curr_halfedge->next();
+    }
+
+    // Fix the last halfedge (first's prev).
+    ccb_curr_halfedge->set_next(ccb_last_halfedge_prev);
   }
 };
 

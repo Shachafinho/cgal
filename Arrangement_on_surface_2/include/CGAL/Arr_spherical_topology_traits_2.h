@@ -652,6 +652,9 @@ public:
       \return A pointer to the reference face.
   */
   Face* reference_face() { return spherical_face(); }
+
+  /*! Reflect the dcel through the origin. */
+  void reflect_topology();
   //@}
 
 protected:
