@@ -1437,46 +1437,6 @@ public:
     }
   }
 
-  /*! Reflect the DCEL through the origin. */
-  void reflect()
-  {
-    typedef typename Face::Outer_ccb_iterator Outer_ccb_iterator;
-    typedef typename Face::Inner_ccb_iterator Inner_ccb_iterator;
-
-    // Flip h and its opposite, and update the incidence records.
-    for (Edge_iterator eit = halfedges_begin(); eit != halfedges_end(); ++eit) {
-      Halfedge* h = &(*eit);
-      Halfedge* opp_h = h->opposite();
-
-      Vertex* v = h->vertex();
-      Vertex* opp_v = opp_h->vertex();
-
-      // Flip source and target for h and its opposite.
-      h->set_vertex(opp_v);
-      opp_h->set_vertex(v);
-      h->set_direction(opp_h->direction());
-
-      // Update the vertices accordingly.
-      v->set_halfedge(opp_h);
-      opp_v->set_halfedge(h);
-    }
-
-    // Update the ccb chains (inner and outer) of each face.
-    for (Face_iterator fit = faces_begin(); fit != faces_end(); ++fit) {
-      Face* f = &(*fit);
-
-      Outer_ccb_iterator out_ccb_it;
-      for (out_ccb_it = f->outer_ccbs_begin(); out_ccb_it != f->outer_ccbs_end(); ++out_ccb_it) {
-        reverse_ccb_chain(*out_ccb_it);
-      }
-
-      Inner_ccb_iterator in_ccb_it;
-      for (in_ccb_it = f->inner_ccbs_begin(); in_ccb_it != f->inner_ccbs_end(); ++in_ccb_it) {
-        reverse_ccb_chain(*in_ccb_it);
-      }
-    }
-  }
-
 protected:
   /*! Create a new halfedge. */
   Halfedge* _new_halfedge()

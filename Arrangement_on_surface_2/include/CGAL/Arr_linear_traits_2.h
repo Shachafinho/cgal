@@ -1802,23 +1802,28 @@ public:
 
   public:
     /*!
-     * Return the given point, reflected thorugh the origin.
+     * Return the given point, reflected through the origin.
      * \param p The point.
-     * \return The refected point.
+     * \return The reflected point.
      */
     Point_2 operator()(const Point_2& p) const
     { return (Point_2(-(p.x()), -(p.y()))); }
-
-    /*!
-     * Return the given x-monotone curve, reflected thorugh the origin.
+    
+    /*! Reflect the given x-monotone curve through the origin and insert it
+     * into the given output iterator. As a result, only one object will
+     * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \return The refected curve.
+     * \param oi The output iterator, whose value-type is Object. The output
+     *           object is a wrapper of an X_monotone_curve_2 which is
+     *           essentially the same as the input curve.
+     * \return The past-the-end iterator.
      */
-    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+    template<typename OutputIterator>
+    OutputIterator operator()(const X_monotone_curve_2& xcv, OutputIterator oi) const
     {
       typedef typename Kernel_::Construct_point_on_2 Construct_point_on_2;
-
-      CGAL_precondition (!xcv.is_degenerate());
+      
+      CGAL_precondition(!xcv.is_degenerate());
 
       X_monotone_curve_2 reflected_xcv;
       const Kernel* kernel = m_traits;
@@ -1851,7 +1856,8 @@ public:
         reflected_xcv = kernel->construct_ray_2_object()(reflected_source, reflected_target);
       }
 
-      return reflected_xcv;
+      *oi++ = make_object(reflected_xcv);
+      return oi;
     }
   };
 

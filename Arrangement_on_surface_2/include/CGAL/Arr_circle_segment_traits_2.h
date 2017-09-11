@@ -767,19 +767,23 @@ public:
 
   public:
     /*!
-     * Return the given point, reflected thorugh the origin.
+     * Return the given point, reflected through the origin.
      * \param p The point.
-     * \return The refected point.
+     * \return The reflected point.
      */
     Point_2 operator()(const Point_2& p) const
     { return (Point_2(-(p.x()), -(p.y()))); }
 
-    /*!
-     * Return the given x-monotone curve, reflected thorugh the origin.
+    /*! Reflect the given x-monotone curve through the origin and insert it
+     * into the given output iterator. As a result, only one object will
+     * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \return The refected curve.
+     * \param oi The output iterator, whose value-type is Object. The returned
+     *           objects are all wrcv.is_in_x_range (p)appers X_monotone_curve_2 objects.
+     * \return The past-the-end iterator.
      */
-    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+    template<typename OutputIterator>
+    OutputIterator operator()(const X_monotone_curve_2& xcv, OutputIterator oi) const
     {
       typedef typename Kernel::Line_2   Line_2;
       typedef typename Kernel::Circle_2 Circle_2;
@@ -813,7 +817,8 @@ public:
           reflected_circle, reflected_source, reflected_target, xcv.orientation());
       }
 
-      return reflected_xcv;
+      *oi++ = make_object(reflected_xcv);
+      return oi;
     }
   };
 

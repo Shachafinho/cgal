@@ -674,16 +674,6 @@ erase_redundant_vertex(Vertex* v)
   return NULL;
 }
 
-/*! \brief reflects the dcel through the origin. */
-template <typename GeomTraits, typename Dcel>
-void
-typename Arr_spherical_topology_traits_2<GeomTraits, Dcel>::
-reflect_topology()
-{
-  m_dcel.reflect();
-  dcel_updated();
-}
-
 /*! \brief obtains the curve associated with a boundary vertex */
 template <typename GeomTraits, typename Dcel>
 const typename

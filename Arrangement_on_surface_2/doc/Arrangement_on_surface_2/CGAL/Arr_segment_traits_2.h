@@ -84,6 +84,9 @@ X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv,
 
 } /* end Arr_segment_traits_2::Trim_2 */
 
+/// \name Functor definitions for the reflection traits.
+/// @{
+
 /*!
 Models the `ArrangementReflectionTraits_2::Reflect_2` concept.
 Reflects the arrangement's geometric objects through the origin.
@@ -91,22 +94,26 @@ Reflects the arrangement's geometric objects through the origin.
 class Reflect_2 {
 public:
 
-/// \name Operations 
+/// \name Operations
 /// @{
 
 /*!
-Return the given point, reflected thorugh the origin.
+Return the given point, reflected through the origin.
 */ 
-Point_2 operator()(const Point_2& p) const
+Point_2 operator()(const Point_2& p) const;
 
 /*!
-Return the given x-monotone curve, reflected thorugh the origin.
+Reflect the given x-monotone curve through the origin and insert it
+into the given output iterator.
 */
-X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+template<typename OutputIterator>
+OutputIterator operator()(const X_monotone_curve_2& xcv, OutputIterator oi) const;
 
 /// @}
 
 } /* end Arr_segment_traits_2::Reflect_2 */
+
+/// @}
 
 }; /* end Arr_segment_traits_2 */
 } /* end namespace CGAL */

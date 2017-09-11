@@ -1068,24 +1068,29 @@ public:
   {
   public:
     /*!
-     * Return the given point, reflected thorugh the origin.
+     * Return the given point, reflected through the origin.
      * \param p The point.
-     * \return The refected point.
+     * \return The reflected point.
      */
     Point_2 operator()(const Point_2& p) const
     { return (Point_2(-(p.x()), -(p.y()))); }
 
-    /*!
-     * Return the given x-monotone curve, reflected thorugh the origin.
+    /*! Reflect the given x-monotone curve through the origin and insert it
+     * into the given output iterator. As a result, only one object will
+     * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \return The refected curve.
+     * \param oi The output iterator, whose value-type is Object. The output
+     *           object is a wrapper of an X_monotone_curve_2.
+     * \return The past-the-end iterator.
      */
-    X_monotone_curve_2 operator()(const X_monotone_curve_2& xcv) const
+    template<typename OutputIterator>
+    OutputIterator operator()(const X_monotone_curve_2& xcv, OutputIterator oi) const
     {
       Point_2 reflected_source = (*this)(xcv.source());
       Point_2 reflected_target = (*this)(xcv.target());
-
-      return X_monotone_curve_2(reflected_source, reflected_target);
+      X_monotone_curve_2 xc(reflected_source, reflected_target);
+      *oi++ = make_object(xc);
+      return oi;
     }
   };
 
