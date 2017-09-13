@@ -30,6 +30,7 @@
  */
 
 #include <boost/optional/optional.hpp>
+#include <boost/type_traits.hpp>
 
 #include <CGAL/Arrangement_on_surface_2.h>
 #include <CGAL/Arr_accessor.h>
@@ -37,9 +38,6 @@
 #include <list>
 #include <iterator>
 #include <vector>
-#include <boost/mpl/if.hpp>
-#include <boost/mpl/or.hpp>
-#include <boost/type_traits.hpp>
 
 #include <CGAL/assertions.h>
 

@@ -745,6 +745,19 @@ public:
     Base::clear();
   }
 
+  /*! Check whether the sgm center is dirty. */
+  bool is_center_dirty() const { return m_dirty_center; }
+  
+  /*! Obtain the sgm center. */
+  const Point_3 center() const { return m_center; }
+
+  /*! Set the sgm center. */
+  void set_center(const Point_3& center)
+  {
+    m_center = center;
+    m_dirty_center = false;
+  }
+
  // /*! Compute the minkowski sum of a range of objects of type
  //  * Arr_polyhedral_sgm
  //  */
