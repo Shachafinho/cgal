@@ -1454,29 +1454,6 @@ protected:
     halfedge_alloc.destroy(h);
     halfedge_alloc.deallocate(h, 1);
   }
-
-private:
-  /*! Reverse a ccb chain, represented by ccb_halfedge. */
-  void reverse_ccb_chain(Halfedge* ccb_halfedge)
-  {
-    Halfedge* ccb_curr_halfedge = ccb_halfedge;
-
-    // This is the first prev link to be overwritten.
-    Halfedge* ccb_last_halfedge_prev = ccb_halfedge->prev()->prev();
-    
-    Halfedge* ccb_next_halfedge = ccb_curr_halfedge->next();
-    while (ccb_next_halfedge != ccb_halfedge) {
-      // Fix the links of the current halfedge.
-      ccb_curr_halfedge->set_next(ccb_curr_halfedge->prev());
-
-      // Advance to the next halfedge.
-      ccb_curr_halfedge = ccb_next_halfedge;
-      ccb_next_halfedge = ccb_curr_halfedge->next();
-    }
-
-    // Fix the last halfedge (first's prev).
-    ccb_curr_halfedge->set_next(ccb_last_halfedge_prev);
-  }
 };
 
 } //namespace CGAL
