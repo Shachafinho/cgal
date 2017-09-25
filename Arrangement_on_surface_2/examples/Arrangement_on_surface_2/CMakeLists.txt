@@ -1,10 +1,19 @@
 # Created by the script cgal_create_cmake_script
 # This is the CMake script for compiling a CGAL application.
 
-
 project( Arrangement_on_surface_2_Examples )
 
 cmake_minimum_required(VERSION 2.8.10)
+
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_generalized_initializers has_cpp11)
+if(has_cpp11 LESS 0)
+  message(STATUS "NOTICE: This demo requires a C++11 compiler and will not be compiled.")
+  return()
+endif()
+
+# Use C++11 for this directory and its sub-directories.
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 find_package(CGAL QUIET COMPONENTS Core)
 
@@ -23,8 +32,7 @@ if ( CGAL_FOUND )
   endforeach()
 
 else()
-  
-    message(STATUS "This program requires the CGAL library, and will not be compiled.")
-  
-endif()
 
+    message(STATUS "This program requires the CGAL library, and will not be compiled.")
+
+endif()
