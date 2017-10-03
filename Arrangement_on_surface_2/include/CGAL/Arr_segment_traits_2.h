@@ -1079,8 +1079,7 @@ public:
      * into the given output iterator. As a result, only one object will
      * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \param oi The output iterator, whose value-type is Object. The output
-     *           object is a wrapper of an X_monotone_curve_2.
+     * \param oi The output iterator, whose value-type is X_monotone_curve_2.
      * \return The past-the-end iterator.
      */
     template<typename OutputIterator>
@@ -1088,8 +1087,7 @@ public:
     {
       Point_2 reflected_source = (*this)(xcv.source());
       Point_2 reflected_target = (*this)(xcv.target());
-      X_monotone_curve_2 xc(reflected_source, reflected_target);
-      *oi++ = make_object(xc);
+      *oi++ = X_monotone_curve_2(reflected_source, reflected_target);
       return oi;
     }
   };

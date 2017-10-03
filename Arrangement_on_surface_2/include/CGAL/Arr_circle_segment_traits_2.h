@@ -778,8 +778,7 @@ public:
      * into the given output iterator. As a result, only one object will
      * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \param oi The output iterator, whose value-type is Object. The returned
-     *           objects are all wrcv.is_in_x_range (p)appers X_monotone_curve_2 objects.
+     * \param oi The output iterator, whose value-type is X_monotone_curve_2.
      * \return The past-the-end iterator.
      */
     template<typename OutputIterator>
@@ -788,7 +787,8 @@ public:
       typedef typename Kernel::Line_2   Line_2;
       typedef typename Kernel::Circle_2 Circle_2;
 
-      CGAL_precondition (!m_traits->equal_2_object()(xcv.source(), xcv.target()));
+      CGAL_precondition (!m_traits->equal_2_object()(
+        xcv.source(), xcv.target()));
 
       X_monotone_curve_2 reflected_xcv;
 
@@ -801,7 +801,8 @@ public:
         const Line_2& line = xcv.supporting_line();
         Line_2 reflected_line(-line.a(), -line.b(), line.c());
 
-        reflected_xcv = X_monotone_curve_2(reflected_line, reflected_source, reflected_target);
+        reflected_xcv = X_monotone_curve_2(
+          reflected_line, reflected_source, reflected_target);
       }
       else if (xcv.is_circular())
       {
@@ -809,15 +810,16 @@ public:
         const Rational_point_2& circle_center = circle.center();
 
         // reflect the supporting circle
-        Rational_point_2 reflected_center(-circle_center.x(), -circle_center.y());
+        Rational_point_2 reflected_center(
+          -circle_center.x(), -circle_center.y());
         Circle_2 reflected_circle(
           reflected_center, circle.squared_radius(), circle.orientation());
 
-        reflected_xcv = X_monotone_curve_2(
-          reflected_circle, reflected_source, reflected_target, xcv.orientation());
+        reflected_xcv = X_monotone_curve_2(reflected_circle,
+          reflected_source, reflected_target, xcv.orientation());
       }
 
-      *oi++ = make_object(reflected_xcv);
+      *oi++ = reflected_xcv;
       return oi;
     }
   };

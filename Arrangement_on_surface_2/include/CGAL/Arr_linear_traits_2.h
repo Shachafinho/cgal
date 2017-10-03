@@ -1813,9 +1813,8 @@ public:
      * into the given output iterator. As a result, only one object will
      * be contained in the iterator.
      * \param xcv The x-monotone curve.
-     * \param oi The output iterator, whose value-type is Object. The output
-     *           object is a wrapper of an X_monotone_curve_2 which is
-     *           essentially the same as the input curve.
+     * \param oi The output iterator, whose value-type is X_monotone_curve_2,
+     *           which is essentially the same as the input curve.
      * \return The past-the-end iterator.
      */
     template<typename OutputIterator>
@@ -1833,30 +1832,39 @@ public:
         Point_2 reflected_source = (*this)(xcv.source());
         Point_2 reflected_target = (*this)(xcv.target());
 
-        reflected_xcv = kernel->construct_segment_2_object()(reflected_source, reflected_target);
+        reflected_xcv = kernel->construct_segment_2_object()(
+          reflected_source, reflected_target);
       }
       else if (xcv.is_line())
       {
-        Construct_point_on_2 construct_vertex = kernel->construct_point_on_2_object();
+        Construct_point_on_2 construct_vertex =
+          kernel->construct_point_on_2_object();
 
         Line_2 line = xcv.line();
-        Point_2 reflected_source = (*this)(construct_vertex(line, 0));   // Some point on the line.
-        Point_2 reflected_target = (*this)(construct_vertex(line, 1));   // Some point further on the line.
+        // Some point on the line.
+        Point_2 reflected_source = (*this)(construct_vertex(line, 0));
+        // Some point further on the line.
+        Point_2 reflected_target = (*this)(construct_vertex(line, 1));
 
-        reflected_xcv = kernel->construct_line_2_object()(reflected_source, reflected_target);
+        reflected_xcv = kernel->construct_line_2_object()(
+          reflected_source, reflected_target);
       }
       else if (xcv.is_ray())
       {
-        Construct_point_on_2 construct_vertex = kernel->construct_point_on_2_object();
+        Construct_point_on_2 construct_vertex =
+          kernel->construct_point_on_2_object();
 
         Ray_2 ray = xcv.ray();
-        Point_2 reflected_source = (*this)(construct_vertex(ray, 0));   // The source point.
-        Point_2 reflected_target = (*this)(construct_vertex(ray, 1));   // Some point on the ray.
+        // The source point.
+        Point_2 reflected_source = (*this)(construct_vertex(ray, 0));
+        // Some point on the ray.
+        Point_2 reflected_target = (*this)(construct_vertex(ray, 1));
 
-        reflected_xcv = kernel->construct_ray_2_object()(reflected_source, reflected_target);
+        reflected_xcv = kernel->construct_ray_2_object()(
+          reflected_source, reflected_target);
       }
 
-      *oi++ = make_object(reflected_xcv);
+      *oi++ = reflected_xcv;
       return oi;
     }
   };

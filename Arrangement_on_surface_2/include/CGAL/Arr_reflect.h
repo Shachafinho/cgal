@@ -105,9 +105,9 @@ reflect_arrangement_impl(Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr
   // Handle edges.
   for (Edge_iterator eit = arr.edges_begin(); eit != arr.edges_end(); ++eit) {
     // Reflect the curve assoicated with the edge.
-    Object reflected_curve;
+    X_monotone_curve_2 reflected_curve;
     reflect_object(eit->curve(), &reflected_curve);
-    eit->curve() = object_cast<X_monotone_curve_2>(reflected_curve);
+    eit->curve() = reflected_curve;
   }
 
   // Invert the directions of the edges.
@@ -200,9 +200,9 @@ reflect_arrangement_impl(Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr
   // Handle edges.
   for (Edge_iterator eit = arr.edges_begin(); eit != arr.edges_end(); ++eit) {
     // Reflect the curve assoicated with the edge.
-    std::list<Object> x_monotone_curves;
+    std::list<X_monotone_curve_2> x_monotone_curves;
     reflect_object(eit->curve(), std::back_inserter(x_monotone_curves));
-    eit->curve() = object_cast<X_monotone_curve_2>(x_monotone_curves.front());
+    eit->curve() = x_monotone_curves.front();
 
     // Note that the curve may be divided, resulting in two reflected x-monotone
     // curves.
@@ -211,8 +211,7 @@ reflect_arrangement_impl(Arrangement_on_surface_2<GeomeTraits, TopolTraits>& arr
       // Reflecting the original curve divided it into 2 curves.
       // Associate the current halfedge (or its twin) with the second reflected
       // curve so we can insert it later.
-      X_monotone_curve_2 additional_curve =
-        object_cast<X_monotone_curve_2>(x_monotone_curves.back());
+      X_monotone_curve_2 additional_curve = x_monotone_curves.back();
       Halfedge_handle hh =
         equal_object(eit->source()->point(), eit->curve().source()) ?
         eit : eit->twin();
@@ -452,10 +451,10 @@ reflect_arrangement(const Arrangement_on_surface_2<GeomeTraits, TopolTraits>& ar
 
   // Some type assertions (not all, but better then nothing).
   CGAL_static_assertion
-  ((boost::is_convertible<typename GeomeTraits::Point_2, \
+  ((boost::is_convertible<typename GeomeTraits::Point_2,
                           typename GeomeTraitsRes::Point_2>::value));
   CGAL_static_assertion
-  ((boost::is_convertible<typename GeomeTraits::X_monotone_curve_2, \
+  ((boost::is_convertible<typename GeomeTraits::X_monotone_curve_2,
                           typename GeomeTraitsRes::X_monotone_curve_2>::value));
 
   // The result arrangement cannot be the input arrangement.

@@ -2206,15 +2206,14 @@ public:
      * given output iterator. As a result, either one or two objects
      * will be contained in the iterator.
      * \param xcv the x-monotone curve.
-     * \param oi the output iterator, whose value-type is Object. The output
-     *           object is a wrapper of either an X_monotone_curve_2, or - in
-     *           case the input spherical_arc is degenerate - a Point_2 object.
+     * \param oi the output iterator, whose value-type is X_monotone_curve_2.
      * \return the past-the-end iterator.
      */
     template<typename OutputIterator>
     OutputIterator operator()(const X_monotone_curve_2& xcv, OutputIterator oi) const
     {
-      typedef typename Kernel::Counterclockwise_in_between_2 Counterclockwise_in_between_2;
+      typedef typename Kernel::Counterclockwise_in_between_2
+        Counterclockwise_in_between_2;
 
       CGAL_precondition(!xcv.is_degenerate());
 
@@ -2225,16 +2224,13 @@ public:
           // The arc is vertical => divide it into 2 meridians;
           const Direction_3& np = m_traits->neg_pole();
           const Direction_3& pp = m_traits->pos_pole();
-          X_monotone_curve_2 xc1(np, pp, normal, true, true);
-          X_monotone_curve_2 xc2(pp, np, normal, true, false);
-          *oi++ = make_object(xc1);
-          *oi++ = make_object(xc2);
+          *oi++ = X_monotone_curve_2(np, pp, normal, true, true);
+          *oi++ = X_monotone_curve_2(pp, np, normal, true, false);
           return oi;
         }
 #if defined(CGAL_FULL_X_MONOTONE_GEODESIC_ARC_ON_SPHERE_IS_SUPPORTED)
         // The arc is not vertical => break it at the discontinuity arc:
-        const X_monotone_curve_2 xc(normal);
-        *oi++ = make_object(xc);
+        *oi++ = X_monotone_curve_2(normal);
 #else
         // Full x-monotone arcs are not supported!
         // Split the arc at the intersection point with the complement of the
@@ -2242,10 +2238,8 @@ public:
         bool directed_right = Traits::x_sign(normal) == POSITIVE;
         Direction_3 d1(-(normal.dz()), 0, normal.dx());
         Direction_3 d2(normal.dz(), 0, -(normal.dx()));
-        X_monotone_curve_2 xc1(d1, d2, normal, false, directed_right);
-        X_monotone_curve_2 xc2(d2, d1, normal, false, directed_right);
-        *oi++ = make_object(xc1);
-        *oi++ = make_object(xc2);
+        *oi++ = X_monotone_curve_2(d1, d2, normal, false, directed_right);
+        *oi++ = X_monotone_curve_2(d2, d1, normal, false, directed_right);
 #endif
         return oi;
       }
@@ -2260,7 +2254,7 @@ public:
         // Ensure it's not reflected onto the boundary.
         X_monotone_curve_2 xc(reflected_source, reflected_target, normal);
         CGAL_precondition(!xc.is_on_boundary());
-        *oi++ = make_object(xc);
+        *oi++ = xc;
         return oi;
       }
       // The spherical arc is not vertical
@@ -2271,7 +2265,8 @@ public:
       
       // Check whether the curve's interior intersects the discontinuity arc.
       const Kernel* kernel = m_traits;
-      Counterclockwise_in_between_2 ccw_in_between_2 = kernel->counterclockwise_in_between_2_object();
+      Counterclockwise_in_between_2 ccw_in_between_2 =
+        kernel->counterclockwise_in_between_2_object();
       bool does_intersect_id = xcv.is_directed_right() ?
         ccw_in_between_2(id_xy, ref_source_xy, ref_target_xy) :
         ccw_in_between_2(id_xy, ref_target_xy, ref_source_xy);
@@ -2290,17 +2285,16 @@ public:
         Direction_3 dp(x, y, z);
 #endif
         Point_2 p(dp, Point_2::MID_BOUNDARY_LOC);
-        X_monotone_curve_2 xc1(reflected_source, p, normal, false, xcv.is_directed_right());
-        X_monotone_curve_2 xc2(p, reflected_target, normal, false, xcv.is_directed_right());
-        *oi++ = make_object(xc1);
-        *oi++ = make_object(xc2);
+        *oi++ = X_monotone_curve_2(
+          reflected_source, p, normal, false, xcv.is_directed_right());
+        *oi++ = X_monotone_curve_2(
+          p, reflected_target, normal, false, xcv.is_directed_right());
         return oi;
       }
 
-      // The x-monotone curve's interior doesn't intersect the discontinuity arc.
-      // Thus, it remains x-monotone after the reflection.
-      X_monotone_curve_2 xc(reflected_source, reflected_target, normal);
-      *oi++ = make_object(xc);
+      // The x-monotone curve's interior doesn't intersect the discontinuity
+      // arc. Thus, it remains x-monotone after the reflection.
+      *oi++ = X_monotone_curve_2(reflected_source, reflected_target, normal);
       return oi;
     }
   }; 
